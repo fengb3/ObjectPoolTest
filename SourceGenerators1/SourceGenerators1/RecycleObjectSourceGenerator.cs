@@ -9,13 +9,13 @@ using Microsoft.CodeAnalysis.Text;
 namespace SourceGenerators1;
 
 [Generator]
-public class RecycleObjectSourceGenerator : IIncrementalGenerator
+public class ReusedObjectSourceGenerator : IIncrementalGenerator
 {
 	private const string AttributeName = "ReusedObjectAttribute";
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		// 过滤带有 [RecycleObject] 属性的类。只有被过滤的语法节点可以触发代码生成。
+		// 过滤带有 [ReusedObject] 属性的类。只有被过滤的语法节点可以触发代码生成。
 		var provider = context.SyntaxProvider
 			.CreateSyntaxProvider(
 				(s,   _) => s is ClassDeclarationSyntax,
@@ -29,7 +29,7 @@ public class RecycleObjectSourceGenerator : IIncrementalGenerator
 	}
 
 	/// <summary>
-	/// 检查节点是否带有 [RecycleObject] 属性，并将语法上下文映射到特定的节点类型 (ClassDeclarationSyntax)。
+	/// 检查节点是否带有 [ReusedObject] 属性，并将语法上下文映射到特定的节点类型 (ClassDeclarationSyntax)。
 	/// </summary>
 	/// <param name="context">基于 CreateSyntaxProvider 断言的语法上下文</param>
 	/// <returns>特定的类型转换和属性是否被找到。</returns>
@@ -47,7 +47,7 @@ public class RecycleObjectSourceGenerator : IIncrementalGenerator
 
 			string attributeName = attributeSymbol.ContainingType.ToDisplayString();
 			
-			// 如果是RecycleObject属性的话 就要为这个类 生成代码
+			// 如果是ReusedObject属性的话 就要为这个类 生成代码
 			if (attributeName == $"{AttributeName}")
 				return (classDeclarationSyntax, true);
 		}
@@ -57,11 +57,11 @@ public class RecycleObjectSourceGenerator : IIncrementalGenerator
 
 	/// <summary>
 	/// 生成代码的操作。
-	/// 它将在用户更改的特定节点（用 [RecycleObject] 属性注解的 ClassDeclarationSyntax）上执行。
+	/// 它将在用户更改的特定节点（用 [ReusedObject] 属性注解的 ClassDeclarationSyntax）上执行。
 	/// </summary>
 	/// <param name="context">用于添加源文件的源生成上下文。</param>
 	/// <param name="compilation">用于提供访问语义模型的编译。</param>
-	/// <param name="classDeclarations">触发生成操作的带有 [RecycleObject] 属性的节点。</param>
+	/// <param name="classDeclarations">触发生成操作的带有 [ReusedObject] 属性的节点。</param>
 	private void GenerateCode(SourceProductionContext                context, Compilation compilation,
 	                          ImmutableArray<ClassDeclarationSyntax> classDeclarations)
 	{
